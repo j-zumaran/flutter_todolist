@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+
+import 'user.dart'; 
 
 
 final api = Api();
@@ -50,12 +54,26 @@ class Api {
     return LoginResponse(response.statusCode);
   }
 
+  logout() => dio.get('$API/user/signout');
+
+//===================================================================
+
+  addUserTag(UserTag tag) async {
+    final response = await dio.post(
+        '$API/home/tag/add',
+        options: Options(
+          contentType: Headers.jsonContentType,
+          validateStatus: (status) => status < 500,
+        ),
+        data: jsonEncode(tag)
+    );
+  }
+
+
   Future<String> home() async {
     final response = await dio.get('$API/home');
     return response.data.toString();
   }
-
-  logout() => dio.get('$API/user/signout');
 
 }
 
@@ -74,11 +92,9 @@ class LoginResponse extends ApiResponse {
 
   LoginResponse(int status) : super(status) {
     switch (status) {
-      case 200: msg = "login successful";
-        break;
-      case 401: msg = 'invalid credentials';
-        break;
-      default: msg = 'an error ocurred';
+      case 200: msg = "login successful"; break;
+      case 401: msg = 'invalid credentials'; break;
+      default: msg = 'an error ocurred, try again later';
     }
   }
 }
@@ -89,10 +105,7 @@ class SignUpResponse extends ApiResponse {
   SignUpResponse(int status, dynamic data) : super(status) {
     switch (status) {
       case 201: msg = "signed up successfully"; break;
-      case 400: {
-        msg = 'try again: ${data['error']}';
-        break;
-      }
+      case 400: msg = 'try again: ${data['error']}'; break;
       default: msg = 'an error ocurred $status: ${data['error']}';
     }
   }

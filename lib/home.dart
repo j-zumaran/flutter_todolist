@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertodolist/user.dart';
 
 import 'api.dart';
 import 'widgets.dart';
@@ -23,6 +24,10 @@ class _HomeState extends State<HomePage> {
     setState(() => data = home.toString());
   }
 
+  addRandomTag() {
+    api.addUserTag(UserTag.name(UniqueKey().toString()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope( // disables back button
@@ -36,7 +41,8 @@ class _HomeState extends State<HomePage> {
                 data,
                 style: Theme.of(context).textTheme.headline4,
               ),
-              Button('refresh data', welcome)
+              Button('refresh data', welcome),
+              Button('add random tag', addRandomTag),
             ],
           ),
         ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'login.dart';
+import 'splash.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,7 +10,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TodoList',
       theme: ThemeData.dark(),
-      home: LoginPage(),
+      home: SplashScreen(),
     );
   }
 }
