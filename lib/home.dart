@@ -4,7 +4,6 @@ import 'api.dart';
 import 'widgets.dart';
 
 class HomePage extends StatefulWidget {
-
   @override
   _HomeState createState() => _HomeState();
 }
@@ -21,9 +20,7 @@ class _HomeState extends State<HomePage> {
 
   welcome() async {
     final home = await api.home();
-    setState(() {
-      data = home.toString();
-    });
+    setState(() => data = home.toString());
   }
 
   @override

@@ -19,8 +19,6 @@ class _LoginState extends State<LoginPage> {
 
   var _state = 'mascota';
 
-  //bool validateUser() => _emailTEC.text.isNotEmpty && _passwordTEC.text.isNotEmpty;
-
   void login() async {
     if (!_formKey.currentState.validate()) return;
 
