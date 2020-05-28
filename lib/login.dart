@@ -5,42 +5,35 @@ import 'home.dart';
 import 'api.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({ Key key }) : super(key: key);
 
   @override
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<LoginPage> {
-  final _emailText = TextEditingController();
-  final _passwordText = TextEditingController();
+  final _emailTEC = TextEditingController();
+  final _passwordTEC = TextEditingController();
 
-  bool validateUser() => _emailText.text.isNotEmpty && _passwordText.text.isNotEmpty;
+  bool validateUser() => _emailTEC.text.isNotEmpty && _passwordTEC.text.isNotEmpty;
 
-  String _state;
+  String _state = '';
 
   void login() async {
-    if (validateUser()) {
-      setState(() {
-        _state = "Sending request";
-      });
+    if (!validateUser()) return;
 
-      final response = await api.login(_emailText.text, _passwordText.text);
+    setState(() {
+      _state = 'sending request';
+    });
 
-      setState(() {
-        switch (response.statusCode) {
-          case 200:
-            _state = "success ${response.statusMessage} $response";
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-            break;
-          case 401: _state = 'Invalid credentials'; break;
-          default: _state = '${response.statusMessage}';
-        }
-      });
-    }
+    final login = await api.login(_emailTEC.text, _passwordTEC.text);
+
+    setState(() {
+      _state = login.msg;
+      if (login.isSuccessful()) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+      }
+    });
+
   }
 
   @override
@@ -50,11 +43,10 @@ class _LoginState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            BorderTextField.required('email', _emailText),
-            BorderTextField.password(_passwordText),
+            BorderTextField.required('email', _emailTEC),
+            BorderTextField.password(_passwordTEC),
             Button('Login', login),
-            Text(
-              '$_state',
+            Text('$_state',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
@@ -65,8 +57,8 @@ class _LoginState extends State<LoginPage> {
 
   @override
   void dispose() {
-    _emailText.dispose();
-    _passwordText.dispose();
+    _emailTEC.dispose();
+    _passwordTEC.dispose();
     super.dispose();
   }
 }

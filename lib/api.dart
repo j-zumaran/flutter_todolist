@@ -1,26 +1,25 @@
-
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 
 
+final api = Api();
+
 class Api {
 
+  static const API = 'http://vialineperu.com:8080/schedule-0.0.1-SNAPSHOT';
   final dio = Dio();
   final cookieJar = CookieJar();
-  static const API = 'http://vialineperu.com:8080/schedule-0.0.1-SNAPSHOT';
 
   Api() {
     dio.interceptors.add(CookieManager(cookieJar));
   }
 
-  Future<Response<dynamic>> login(String email, String password) async {
-    print(cookieJar.loadForRequest(Uri.parse('$API/home')));
-
-    return dio.post(
+  Future<LoginResponse> login(String email, String password) async {
+    final response = await dio.post(
         '$API/user/signin',
         options: Options(
-          followRedirects: true,
+          followRedirects: false,
           contentType: Headers.formUrlEncodedContentType,
           validateStatus: (status) => status < 500,
         ),
@@ -29,6 +28,8 @@ class Api {
           'password': password
         }
     );
+
+    return LoginResponse(response.statusCode);
   }
 
   Future<String> home() async {
@@ -37,5 +38,25 @@ class Api {
   }
 }
 
-final api = Api();
+class ApiResponse {
+  final int status;
+
+  ApiResponse(this.status);
+}
+
+class LoginResponse extends ApiResponse {
+  String msg;
+
+  LoginResponse(int status) : super(status) {
+    switch (status) {
+      case 200: msg = "login successful";
+        break;
+      case 401: msg = 'invalid credentials';
+        break;
+      default: msg = 'an error ocurred';
+    }
+  }
+
+  bool isSuccessful() => status == 200;
+}
 

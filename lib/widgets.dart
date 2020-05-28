@@ -24,7 +24,6 @@ class BorderTextField extends StatelessWidget {
         Container(
           width: 300,
           child: TextFormField(
-            autofocus: true,
             obscureText: obscureText,
             controller: _controller,
             decoration: InputDecoration(
