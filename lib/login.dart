@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'widgets.dart';
 import 'home.dart';
 import 'api.dart';
+import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
-
   @override
   _LoginState createState() => _LoginState();
 }
@@ -13,27 +15,33 @@ class LoginPage extends StatefulWidget {
 class _LoginState extends State<LoginPage> {
   final _emailTEC = TextEditingController();
   final _passwordTEC = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  bool validateUser() => _emailTEC.text.isNotEmpty && _passwordTEC.text.isNotEmpty;
+  var _state = 'mascota';
 
-  String _state = '';
+  //bool validateUser() => _emailTEC.text.isNotEmpty && _passwordTEC.text.isNotEmpty;
 
   void login() async {
-    if (!validateUser()) return;
+    if (!_formKey.currentState.validate()) return;
 
-    setState(() {
-      _state = 'sending request';
-    });
-
+    setState(() => _state = 'sending request');
     final login = await api.login(_emailTEC.text, _passwordTEC.text);
 
-    setState(() {
-      _state = login.msg;
-      if (login.isSuccessful()) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
-      }
-    });
+    setState(() => _state = login.msg);
 
+    if (login.isSuccessful()) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+      Timer(Duration(seconds:2), () {
+        _emailTEC.text = '';
+        _passwordTEC.text = '';
+      });
+      _state = '';
+    }
+  }
+
+  signUp() async {
+    final email = await Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
+    setState(() => _emailTEC.text = email);
   }
 
   @override
@@ -43,9 +51,19 @@ class _LoginState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            BorderTextField.required('email', _emailTEC),
-            BorderTextField.password(_passwordTEC),
-            Button('Login', login),
+            Text('login'),
+            Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  BorderTextField.required('email', _emailTEC),
+                  BorderTextField.password(_passwordTEC),
+                  Button('login', login),
+                ],
+              ),
+            ),
+            Button('no account? sign up', signUp),
             Text('$_state',
               style: Theme.of(context).textTheme.headline4,
             ),

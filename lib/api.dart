@@ -15,6 +15,24 @@ class Api {
     dio.interceptors.add(CookieManager(cookieJar));
   }
 
+  Future<SignUpResponse> signUp(String email, String password, String passwordConfirm, {String name}) async {
+    final response = await dio.post(
+      '$API/user/signup',
+      options: Options(
+        contentType: Headers.jsonContentType,
+        validateStatus: (status) => status < 500,
+      ),
+      data: {
+        'name': name?? email.split('@')[0],
+        'email': email,
+        'password': password,
+        'passwordConfirm': passwordConfirm
+      }
+    );
+
+    return SignUpResponse(response.statusCode, response.data);
+  }
+
   Future<LoginResponse> login(String email, String password) async {
     final response = await dio.post(
         '$API/user/signin',
@@ -36,12 +54,19 @@ class Api {
     final response = await dio.get('$API/home');
     return response.data.toString();
   }
+
+  logout() => dio.get('$API/user/signout');
+
 }
+
+//=====================================================================
 
 class ApiResponse {
   final int status;
 
   ApiResponse(this.status);
+
+  bool isSuccessful() => status == 200;
 }
 
 class LoginResponse extends ApiResponse {
@@ -56,7 +81,23 @@ class LoginResponse extends ApiResponse {
       default: msg = 'an error ocurred';
     }
   }
+}
 
-  bool isSuccessful() => status == 200;
+class SignUpResponse extends ApiResponse {
+  String msg;
+
+  SignUpResponse(int status, dynamic data) : super(status) {
+    switch (status) {
+      case 201: msg = "signed up successfully"; break;
+      case 400: {
+        msg = 'try again: ${data['error']}';
+        break;
+      }
+      default: msg = 'an error ocurred $status: ${data['error']}';
+    }
+  }
+
+  @override
+  bool isSuccessful() => status == 201;
 }
 

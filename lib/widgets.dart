@@ -8,7 +8,13 @@ class BorderTextField extends StatelessWidget {
   }
 
   factory BorderTextField.password(TextEditingController controller) {
-    return BorderTextField('password', controller, (pass) => pass.isEmpty ? 'enter password': null);
+    return BorderTextField('password', controller, (pass) => pass.isEmpty ? 'enter password': null, obscureText: true);
+  }
+
+  factory BorderTextField.passwordConfirm(TextEditingController controller, TextEditingController passController) {
+    return BorderTextField('confirm password', controller,
+            (pass) => pass.isEmpty? 'enter password': pass == passController.text? null: "passwords dont't match",
+        obscureText: true);
   }
 
   final String _label;
@@ -23,13 +29,15 @@ class BorderTextField extends StatelessWidget {
       children: <Widget>[
         Container(
           width: 300,
+          padding: EdgeInsets.all(10),
           child: TextFormField(
             obscureText: obscureText,
             controller: _controller,
+            validator: _validate,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: _label,
-              errorText: _validate(_controller.text)
+             // errorText: _validate(_controller.text),
             ),
           ),
         )
@@ -52,3 +60,59 @@ class Button extends StatelessWidget {
     );
   }
 }
+
+final yesNoDialog = (BuildContext context, String msg, Function yesAction, {Function noAction}) => showDialog<bool>(
+  context: context,
+  builder: (c) => AlertDialog(
+    content: Text(msg),
+    actions: <Widget>[
+      FlatButton(
+        child: Text('Yes'),
+        onPressed: () {
+          Navigator.pop(c, true);
+          yesAction.call();
+        },
+      ),
+      FlatButton(
+        child: Text('No'),
+        onPressed: () {
+          Navigator.pop(c, false);
+          noAction?.call();
+        },
+      )
+    ],
+  ),
+);
+
+/*showAlertDialog(BuildContext context) {
+
+  // set up the buttons
+  Widget cancelButton = FlatButton(
+    child: Text("Cancel"),
+    onPressed:  () {},
+  );
+  Widget continueButton = FlatButton(
+    child: Text("Continue"),
+    onPressed:  () {},
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("AlertDialog"),
+    content: Text("Would you like to continue learning how to use Flutter alerts?"),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: null,
+      );
+    },
+  );
+}*/
