@@ -21,7 +21,7 @@ class _SplashState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('splash cmtre'),
+        child: const Text('splash cmtre'),
       ),
     );
   }

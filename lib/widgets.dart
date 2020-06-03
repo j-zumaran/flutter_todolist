@@ -11,9 +11,9 @@ class BorderTextField extends StatelessWidget {
     return BorderTextField('password', controller, (pass) => pass.isEmpty ? 'enter password': null, obscureText: true);
   }
 
-  factory BorderTextField.passwordConfirm(TextEditingController controller, TextEditingController passController) {
+  factory BorderTextField.passwordConfirm(TextEditingController controller, TextEditingController confirm) {
     return BorderTextField('confirm password', controller,
-            (pass) => pass.isEmpty? 'enter password': pass == passController.text? null: "passwords dont't match",
+            (pass) => pass.isEmpty? 'enter password': pass == confirm.text? null: "passwords don't match",
         obscureText: true);
   }
 
@@ -29,7 +29,7 @@ class BorderTextField extends StatelessWidget {
       children: <Widget>[
         Container(
           width: 300,
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: TextFormField(
             obscureText: obscureText,
             controller: _controller,
@@ -67,14 +67,14 @@ final yesNoDialog = (BuildContext context, String msg, Function yesAction, {Func
     content: Text(msg),
     actions: <Widget>[
       FlatButton(
-        child: Text('Yes'),
+        child: const Text('Yes'),
         onPressed: () {
           Navigator.pop(c, true);
           yesAction.call();
         },
       ),
       FlatButton(
-        child: Text('No'),
+        child: const Text('No'),
         onPressed: () {
           Navigator.pop(c, false);
           noAction?.call();
@@ -83,3 +83,19 @@ final yesNoDialog = (BuildContext context, String msg, Function yesAction, {Func
     ],
   ),
 );
+
+class CenteredColumn extends StatelessWidget {
+  CenteredColumn({this.children});
+  final List<Widget> children;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: children,
+        ),
+      ),
+    );
+  }
+}

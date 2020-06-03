@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertodolist/user.dart';
 
 import 'widgets.dart';
 import 'home.dart';
@@ -23,12 +24,15 @@ class _LoginState extends State<LoginPage> {
     if (!_formKey.currentState.validate()) return;
 
     setState(() => _state = 'sending request');
-    final login = await api.login(_emailTEC.text, _passwordTEC.text);
+
+    final user = LoginCredentials(_emailTEC.text, _passwordTEC.text);
+
+    final login = await api.login(user);
 
     setState(() => _state = login.msg);
 
     if (login.isSuccessful()) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.push(context, MaterialPageRoute(builder: (c) => HomePage()));
       Timer(Duration(seconds:2), () {
         _emailTEC.text = '';
         _passwordTEC.text = '';
@@ -45,28 +49,25 @@ class _LoginState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('login'),
-            Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  BorderTextField.required('email', _emailTEC),
-                  BorderTextField.password(_passwordTEC),
-                  Button('login', login),
-                ],
-              ),
+      body: CenteredColumn(
+        children: <Widget>[
+          const Text('login'),
+          Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                BorderTextField.required('email', _emailTEC),
+                BorderTextField.password(_passwordTEC),
+                Button('login', login),
+              ],
             ),
-            Button('no account? sign up', signUp),
-            Text('$_state',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
+          ),
+          Button('no account? sign up', signUp),
+          Text('$_state',
+            style: Theme.of(context).textTheme.headline4,
+          ),
+        ],
       ),
     );
   }
